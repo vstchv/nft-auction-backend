@@ -23,7 +23,7 @@ public class UserController {
   @RequestMapping(value = "api/users/register", method = RequestMethod.POST)
   public void registerUser(@RequestBody User user) {
     //TODO change to userDTO?
-    userService.registerUser();
+    userService.registerUser(user);
   }
 
 }
