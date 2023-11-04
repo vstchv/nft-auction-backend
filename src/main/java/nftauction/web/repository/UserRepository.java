@@ -10,5 +10,7 @@ import nftauction.web.model.User;
 @Qualifier(value = "userRepository")
 public interface UserRepository extends JpaRepository<User, Long> {
 
+  User findByUsername(String username);
+
 
 }

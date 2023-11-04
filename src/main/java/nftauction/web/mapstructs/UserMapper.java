@@ -1,6 +1,5 @@
 package nftauction.web.mapstructs;
 
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -12,7 +11,7 @@ import nftauction.web.model.User;
 public interface UserMapper {
   UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-  @Mapping(target = "", ignore = true)
+  @Mapping(target = "verifiedProfile", ignore = true)
   User mapToUser(UserRegisterDto userRegisterDto);
 
 
