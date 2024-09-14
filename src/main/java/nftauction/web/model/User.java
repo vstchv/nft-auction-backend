@@ -9,6 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,25 +26,30 @@ import nftauction.web.enums.Role;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "_user")
+@Table(name = "users")
 public class User implements UserDetails {
 
   @Id
   @GeneratedValue
   private Integer id;
-  private String firstname;
-  private String lastname;
-  private String email;
+  private String username;
   private String password;
-
+  private String firstName;
+  private String lastName;
+  private String email;
+  private boolean isVerifiedProfile;
   @Enumerated(EnumType.STRING)
   private Role role;
 
 
   @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
+  public Collection<GrantedAuthority> getAuthorities() {
+    if (role == null) {
+      throw new IllegalStateException("User role is not set");
+    }
     return List.of(new SimpleGrantedAuthority(role.name()));
   }
+
 
   @Override
   public String getPassword() {

@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -34,7 +35,9 @@ public class SecurityConfiguration {
       "/configuration/security",
       "/swagger-ui/**",
       "/webjars/**",
-      "/swagger-ui.html"
+      "/swagger-ui.html",
+      "/api/users/register",
+      "/api/users/login"
   };
   private final JwtAuthenticationFilter jwtAuthFilter;
   private final AuthenticationProvider authenticationProvider;
@@ -44,23 +47,17 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http
         .csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(req ->
-                                   req.requestMatchers(WHITE_LIST_URL)
-                                      .permitAll()
-                                      .requestMatchers("/api/**")
-                                      .authenticated()
+        .authorizeHttpRequests(req -> req
+            .requestMatchers(WHITE_LIST_URL).permitAll()
+            .requestMatchers("/api/**").authenticated()
         )
-        .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authenticationProvider(authenticationProvider)
-        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-        .logout(logout ->
-                    logout.logoutUrl("/api/v1/auth/logout")
-                          .addLogoutHandler(logoutHandler)
-                          .logoutSuccessHandler(
-                              (request, response, authentication) -> SecurityContextHolder.clearContext())
-        )
-    ;
+        .addFilterAfter(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }
+
+
 }
