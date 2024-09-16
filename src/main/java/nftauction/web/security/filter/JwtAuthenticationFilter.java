@@ -1,27 +1,23 @@
 package nftauction.web.security.filter;
 
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
-import lombok.RequiredArgsConstructor;
-import nftauction.web.security.JwtService;
-import nftauction.web.service.CustomUserDetailsService;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import nftauction.web.security.JwtService;
+import nftauction.web.security.common.CustomUserDetailsService;
 
 @Component
 @RequiredArgsConstructor
@@ -46,6 +42,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     final String authHeader = request.getHeader("Authorization");
     final String jwt;
     final String userEmail;
+
+    if (request.getRequestURI().contains("api/users/login") || request.getRequestURI().contains(
+        "api/users/register")) {
+      logger.debug(request.getRequestURI() + " does not require authentication.");
+      filterChain.doFilter(request, response);
+      return;
+    }
 
     // Validate header
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
