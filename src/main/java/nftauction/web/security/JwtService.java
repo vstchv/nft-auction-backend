@@ -1,12 +1,5 @@
 package nftauction.web.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import nftauction.web.security.common.CustomUserDetails;
-
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,6 +8,13 @@ import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import nftauction.web.security.common.CustomUserDetails;
 
 @Service
 public class JwtService {
@@ -37,28 +37,29 @@ public class JwtService {
     return claimsResolver.apply(claims);
   }
 
-  public String createAuthToken(CustomUserDetails CustomUserDetails) {
-    return generateToken(new HashMap<>(), CustomUserDetails);
+  public String createAuthToken(CustomUserDetails customUserDetails) {
+    return generateToken(new HashMap<>(), customUserDetails);
   }
 
-  public String generateToken(Map<String, Object> extraClaims, CustomUserDetails CustomUserDetails) {
-    return buildToken(extraClaims, CustomUserDetails, jwtExpiration);
+  public String generateToken(Map<String, Object> extraClaims,
+                              CustomUserDetails customUserDetails) {
+    return buildToken(extraClaims, customUserDetails, jwtExpiration);
   }
 
-  private String buildToken(Map<String, Object> extraClaims, CustomUserDetails CustomUserDetails,
+  private String buildToken(Map<String, Object> extraClaims, CustomUserDetails customUserDetails,
                             long expiration) {
     return Jwts.builder()
                .setClaims(extraClaims)
-               .setSubject(CustomUserDetails.getUsername())
+               .setSubject(customUserDetails.getUsername())
                .setIssuedAt(new Date(System.currentTimeMillis()))
                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                .compact();
   }
 
-  public boolean isTokenValid(String token, CustomUserDetails CustomUserDetails) {
+  public boolean isTokenValid(String token, CustomUserDetails customUserDetails) {
     final String username = extractUsername(token);
-    return (username.equals(CustomUserDetails.getUsername())) && !isTokenExpired(token);
+    return (username.equals(customUserDetails.getUsername())) && !isTokenExpired(token);
   }
 
   private boolean isTokenExpired(String token) {

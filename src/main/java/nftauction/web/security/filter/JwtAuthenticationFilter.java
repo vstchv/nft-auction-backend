@@ -79,7 +79,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext()
-                             .setAuthentication(authToken);  // Set authenticated user in context
+                             .setAuthentication(authToken);
         logger.info("Authenticated user set in SecurityContext: " + userEmail);
       } else {
         logger.warn("Invalid JWT token: " + jwt);
@@ -90,3 +90,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   }
 
 }
+
+
+// TODO Fix authorities and mapper again ? set proper claims on token

@@ -27,13 +27,5 @@ public class CustomUserDetails implements UserDetails {
   protected boolean accountNonLocked;
   protected boolean credentialsNonExpired;
   protected boolean enabled;
-
-
-  //    public Collection<GrantedAuthority> getAuthorities() {
-  //      if (role == null) {
-  //        throw new IllegalStateException("User role is not set");
-  //      }
-  //      return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
-  //    }
 }
 
