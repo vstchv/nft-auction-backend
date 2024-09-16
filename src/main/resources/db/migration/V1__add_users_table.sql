@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users
     first_name          VARCHAR(255),
     last_name           VARCHAR(255),
     email               VARCHAR(255) NOT NULL,
-    is_verified_profile BOOLEAN,
-    role                VARCHAR(255)
+    verified_profile BOOLEAN,
+    role                VARCHAR(255),
+    enabled             BOOLEAN      NOT NULL
 );

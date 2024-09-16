@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import nftauction.web.security.common.CustomUserDetails;
 
 import java.security.Key;
 import java.util.Date;
@@ -13,7 +14,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,28 +37,28 @@ public class JwtService {
     return claimsResolver.apply(claims);
   }
 
-  public String createAuthToken(UserDetails userDetails) {
-    return generateToken(new HashMap<>(), userDetails);
+  public String createAuthToken(CustomUserDetails CustomUserDetails) {
+    return generateToken(new HashMap<>(), CustomUserDetails);
   }
 
-  public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-    return buildToken(extraClaims, userDetails, jwtExpiration);
+  public String generateToken(Map<String, Object> extraClaims, CustomUserDetails CustomUserDetails) {
+    return buildToken(extraClaims, CustomUserDetails, jwtExpiration);
   }
 
-  private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails,
+  private String buildToken(Map<String, Object> extraClaims, CustomUserDetails CustomUserDetails,
                             long expiration) {
     return Jwts.builder()
                .setClaims(extraClaims)
-               .setSubject(userDetails.getUsername())
+               .setSubject(CustomUserDetails.getUsername())
                .setIssuedAt(new Date(System.currentTimeMillis()))
                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                .compact();
   }
 
-  public boolean isTokenValid(String token, UserDetails userDetails) {
+  public boolean isTokenValid(String token, CustomUserDetails CustomUserDetails) {
     final String username = extractUsername(token);
-    return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+    return (username.equals(CustomUserDetails.getUsername())) && !isTokenExpired(token);
   }
 
   private boolean isTokenExpired(String token) {

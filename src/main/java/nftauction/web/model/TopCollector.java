@@ -17,7 +17,7 @@ public class TopCollector {
   @Id
   @OneToOne
   @JoinColumn(name = "user_id")
-  private User user;
+  private AppUser user;
 
   @Column(name = "nft_count")
   private int nftCount;

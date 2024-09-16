@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +13,11 @@ import nftauction.web.enums.Role;
 import nftauction.web.exceptions.InputErrorCode;
 import nftauction.web.exceptions.InputException;
 import nftauction.web.mapstructs.UserMapper;
-import nftauction.web.model.User;
+import nftauction.web.model.AppUser;
 import nftauction.web.repository.UserRepository;
 import nftauction.web.security.JwtService;
+import nftauction.web.security.common.CustomUserDetails;
+import nftauction.web.security.common.CustomUserDetailsService;
 
 @Service
 
@@ -31,29 +32,28 @@ public class UserService {
   private PasswordEncoder passwordEncoder;
 
   public void registerUser(UserRegisterDto userRegisterDto) {
-    Optional<User> userOpt = userRepository.findByUsername(userRegisterDto.getUsername());
+    Optional<AppUser> userOpt = userRepository.findByUsername(userRegisterDto.getUsername());
     if (userOpt.isPresent()) {
       throw new InputException(InputErrorCode.USERNAME_ALREADY_EXISTS, "Username already exists");
     }
-    User user = UserMapper.INSTANCE.mapToUser(userRegisterDto);
-    if (userRegisterDto.getRole() == null) {
-      user.setRole(Role.USER);
-    }
+    AppUser user = UserMapper.INSTANCE.mapToUser(userRegisterDto);
+    user.setRole(Role.USER);
+
     user.setPassword(passwordEncoder.encode(userRegisterDto.getPassword()));
     userRepository.save(user);
   }
 
   public String loginUser(String username, String password) {
-    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-    if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+    CustomUserDetails customUserDetails = userDetailsService.loadUserByUsername(username);
+    if (!passwordEncoder.matches(password, customUserDetails.getPassword())) {
       throw new InputException(InputErrorCode.INVALID_CREDENTIALS, "Invalid username or password");
     }
-    return jwtService.createAuthToken(userDetails);
+    return jwtService.createAuthToken(customUserDetails);
   }
 
 
   public List<UserDto> getUsers() {
-    List<User> users = userRepository.findAll();
+    List<AppUser> users = userRepository.findAll();
     return UserMapper.INSTANCE.mapToUserDtoList(users);
   }
 }

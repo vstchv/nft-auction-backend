@@ -33,11 +33,11 @@ public class NFT {
 
   @ManyToOne
   @JoinColumn(name = "creator")
-  private User creator;
+  private AppUser creator;
 
   @ManyToOne
   @JoinColumn(name = "current_holder")
-  private User currentHolder;
+  private AppUser currentHolder;
 
   @Column(name = "date_created")
   private LocalDateTime dateCreated;

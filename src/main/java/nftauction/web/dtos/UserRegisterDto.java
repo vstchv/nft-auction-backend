@@ -1,7 +1,6 @@
 package nftauction.web.dtos;
 
 import lombok.Data;
-import nftauction.web.enums.Role;
 
 @Data
 public class UserRegisterDto {
@@ -10,5 +9,4 @@ public class UserRegisterDto {
   String firstName;
   String lastName;
   String email;
-  Role role;
 }
